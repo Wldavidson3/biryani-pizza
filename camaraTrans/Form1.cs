@@ -14,96 +14,93 @@ namespace camaraTrans
 {
     public partial class Form1 : Form
     {
+        string fileDirectory;
+        string filePath;
+
         public Form1()
         {
             InitializeComponent();
         }
 
-
-
         private void button1_Click(object sender, EventArgs e)
         {
-
-
-            string line;
-
-        
-            StreamWriter writer = new StreamWriter("C:\\camera\\Outputs.txt");
-
-            BoilerPlate(writer);
-
-            StreamReader reader =
-                new StreamReader("C:\\Users\\Amahn\\Desktop\\Files for the phone conference\\Input Files\\t_t3dat for old optimizer.dat");
-
-            Regex regex1 = new Regex(@"\d{3}\)\s\s");
-            Regex regex2 = new Regex(@"\d{3}\)\s[a-zA-Z]");
-            while ((line = reader.ReadLine()) != null)
+            if (filePath == null)
             {
-                StringBuilder sb = new StringBuilder(line);
-                if (sb.ToString().Contains("MODEL"))
-                {
-                    sb.Remove(0, 6);
-
-                }
-                if (sb.ToString().Contains("Intake:")|| sb.ToString().Contains("constraints")|| sb.ToString().Contains("objective:") || sb.ToString().Contains("equations")|| sb.ToString().Contains("objective"))
-                {
-                    sb.Append(";");
-                  
-                }
-              
-               if (sb.ToString().Contains("ABS"))
-                {
-                    int ABSind = (sb.ToString().IndexOf("A"));
-                    sb.Insert(ABSind, "@");
-                   
-                }
-
-                if (sb.ToString().Contains("LOG"))
-                {
-                    int ABSind = (sb.ToString().IndexOf("L"));
-                    sb.Insert(ABSind, "@");
-                    
-                }
-                if (sb.ToString().Contains("- obj4"))
-                {
-                    sb.Append(";");
-                   
-                }
-                if (sb.ToString().Contains("GO"))
-                {
-                    sb.Remove(0, 2);
-                   
-                }
-                if (sb.ToString().Contains("QUIT"))
-                {
-                    sb.Remove(0, 4);
-                   
-                }
-                if (sb.ToString().Contains("DIVERT t_t4xxx.dat"))
-                {
-                    sb.Replace("DIVERT t_t4xxx.dat", "END");
-                   
-                }
-                
-                Match match1 = regex1.Match(sb.ToString());
-                Match match2 = regex2.Match(sb.ToString());
-                if (match1.Success||match2.Success)
-                {
-                    int NumInd = (sb.ToString().IndexOf(")"));
-                    sb.Replace(")", "]", NumInd, 1);
-                    sb.Insert(0, "[R_");
-                 
-                  
-
-                }
-                writer.WriteLine(sb);
-
+                MessageBox.Show("Please select the old input file.", "File Not Selected",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            else
+            {
+                string line;
 
-            writer.Close();
+                StreamWriter writer = new StreamWriter(fileDirectory + "New Output.lng");
 
+                BoilerPlate(writer);
+
+                StreamReader reader =
+                    new StreamReader(filePath);
+
+                Regex regex1 = new Regex(@"\d{3}\)\s\s");
+                Regex regex2 = new Regex(@"\d{3}\)\s[a-zA-Z]");
+
+                while ((line = reader.ReadLine()) != null)
+                {
+
+                    StringBuilder sb = new StringBuilder(line);
+
+                    if (sb.ToString().Contains("MODEL"))
+                    {
+                        sb.Remove(0, 6);
+                    }
+                    if (sb.ToString().Contains("Intake:") || sb.ToString().Contains("constraints") || sb.ToString().Contains("objective:") || sb.ToString().Contains("equations") || sb.ToString().Contains("objective"))
+                    {
+                        sb.Append(";");
+                    }
+                    if (sb.ToString().Contains("ABS"))
+                    {
+                        int ABSind = (sb.ToString().IndexOf("A"));
+                        sb.Insert(ABSind, "@");
+                    }
+                    if (sb.ToString().Contains("LOG"))
+                    {
+                        int ABSind = (sb.ToString().IndexOf("L"));
+                        sb.Insert(ABSind, "@");
+                    }
+                    if (sb.ToString().Contains("- obj4"))
+                    {
+                        sb.Append(";");
+                    }
+                    if (sb.ToString().Contains("GO"))
+                    {
+                        sb.Remove(0, 2);
+                    }
+                    if (sb.ToString().Contains("QUIT"))
+                    {
+                        sb.Remove(0, 4);
+                    }
+                    if (sb.ToString().Contains("DIVERT t_t4xxx.dat"))
+                    {
+                        sb.Replace("DIVERT t_t4xxx.dat", "END");
+                    }
+
+                    Match match1 = regex1.Match(sb.ToString());
+                    Match match2 = regex2.Match(sb.ToString());
+
+                    if (match1.Success || match2.Success)
+                    {
+                        int NumInd = (sb.ToString().IndexOf(")"));
+                        sb.Replace(")", "]", NumInd, 1);
+                        sb.Insert(0, "[R_");
+                    }
+
+                    writer.WriteLine(sb);
+                }
+                writer.Close();
+                MessageBox.Show("The new input file has been created in the directory of the selected file.", "File Has Been Created",
+                    MessageBoxButtons.OK, MessageBoxIcon.None);
+            }
+            
         }
-
 
         private void BoilerPlate(StreamWriter writer)
         {
@@ -129,6 +126,26 @@ namespace camaraTrans
             return currentSt;
         }
 
+        private void button2_Click(object sender, EventArgs e)
+        {
+            int size = -1;
+            DialogResult result = openFileDialog1.ShowDialog(); // Show the dialog.
+            if (result == DialogResult.OK) // Test result.
+            {
+                filePath = openFileDialog1.FileName;
+                fileDirectory = filePath.Replace(openFileDialog1.SafeFileName, "");
 
+                try
+                {
+                    string text = File.ReadAllText(filePath);
+                    size = text.Length;
+                }
+                catch (IOException)
+                {
+                }
+
+                textBox1.Text = filePath;
+            }
+        }
     }
 }
