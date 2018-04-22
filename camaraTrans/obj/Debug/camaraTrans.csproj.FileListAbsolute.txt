@@ -1,0 +1,10 @@
+C:\Users\Amahn\source\repos\camaraTrans\camaraTrans\obj\Debug\camaraTrans.csprojResolveAssemblyReference.cache
+C:\Users\Amahn\source\repos\camaraTrans\camaraTrans\obj\Debug\camaraTrans.Form1.resources
+C:\Users\Amahn\source\repos\camaraTrans\camaraTrans\obj\Debug\camaraTrans.Properties.Resources.resources
+C:\Users\Amahn\source\repos\camaraTrans\camaraTrans\obj\Debug\camaraTrans.csproj.GenerateResource.cache
+C:\Users\Amahn\source\repos\camaraTrans\camaraTrans\obj\Debug\camaraTrans.csproj.CoreCompileInputs.cache
+C:\Users\Amahn\source\repos\camaraTrans\camaraTrans\bin\Debug\camaraTrans.exe.config
+C:\Users\Amahn\source\repos\camaraTrans\camaraTrans\bin\Debug\camaraTrans.exe
+C:\Users\Amahn\source\repos\camaraTrans\camaraTrans\bin\Debug\camaraTrans.pdb
+C:\Users\Amahn\source\repos\camaraTrans\camaraTrans\obj\Debug\camaraTrans.exe
+C:\Users\Amahn\source\repos\camaraTrans\camaraTrans\obj\Debug\camaraTrans.pdb
