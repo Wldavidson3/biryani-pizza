@@ -17,3 +17,4 @@ F:\Users\Walt\Source\Repos\biryani-pizza2\camaraTrans\obj\Debug\camaraTrans.Prop
 F:\Users\Walt\Source\Repos\biryani-pizza2\camaraTrans\obj\Debug\camaraTrans.csproj.GenerateResource.Cache
 F:\Users\Walt\Source\Repos\biryani-pizza2\camaraTrans\obj\Debug\camaraTrans.exe
 F:\Users\Walt\Source\Repos\biryani-pizza2\camaraTrans\obj\Debug\camaraTrans.pdb
+F:\Users\Walt\Source\Repos\biryani-pizza2\camaraTrans\obj\Debug\camaraTrans.csproj.CoreCompileInputs.cache

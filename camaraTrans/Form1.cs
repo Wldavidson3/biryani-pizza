@@ -32,8 +32,9 @@ namespace camaraTrans
             else
             {
                 string line;
+                
 
-                StreamWriter writer = new StreamWriter(fileDirectory + "New Output.lng");
+                StreamWriter writer = new StreamWriter(fileDirectory + "New Input.lng");
 
                 BoilerPlate(writer);
 
@@ -94,6 +95,7 @@ namespace camaraTrans
                     }
 
                     writer.WriteLine(sb);
+
                 }
                 writer.Close();
                 MessageBox.Show("The new input file has been created in the directory of the selected file.", "File Has Been Created",
