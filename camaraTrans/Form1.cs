@@ -14,6 +14,9 @@ namespace camaraTrans
 {
     public partial class Form1 : Form
     {
+        string fileDirectory;
+        string filePath;
+
         String[] VarArr = new String[] { "AGEMG", "DNBW", "MDNSTY", "MKTWT", "PAGEMG", "STDNO1", "STDNO2", "STDNO3", "STDNO4", "STNUMB" };
         String[] lowBound = new String[10];
         String[] upBound = new String[10];
@@ -23,22 +26,25 @@ namespace camaraTrans
             InitializeComponent();
         }
 
-
-
         private void button1_Click(object sender, EventArgs e)
         {
+            if (filePath == null)
+            {
+                MessageBox.Show("Please select the old input file.", "File Not Selected",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                string line;
+                Boolean isObj = false;
 
-
-            string line;
-            Boolean isObj = false;
-
-            StreamWriter writer = new StreamWriter("C:\\camera\\Outputs.txt");
+                StreamWriter writer = new StreamWriter(fileDirectory + "New Input.lng");
 
             BoilerPlate(writer);
             BnsVars(writer);
 
-            StreamReader reader =
-                new StreamReader("C:\\Users\\Amahn\\Desktop\\Files for the phone conference\\Input Files\\t_t3dat for old optimizer.dat");
+                StreamReader reader =
+                    new StreamReader(filePath);
 
             //regex for numbering each line
             Regex regex1 = new Regex(@"\d{3}\)\s\s");
@@ -141,12 +147,13 @@ namespace camaraTrans
                     isObj = false;
                 }
 
+                }
+                writer.Close();
+                MessageBox.Show("The new input file has been created in the directory of the selected file.", "File Has Been Created",
+                    MessageBoxButtons.OK, MessageBoxIcon.None);
             }
-
-            writer.Close();
-
+            
         }
-
 
         private void BoilerPlate(StreamWriter writer)
         {
@@ -208,8 +215,26 @@ namespace camaraTrans
 
         }
 
+        private void button2_Click(object sender, EventArgs e)
+        {
+            int size = -1;
+            DialogResult result = openFileDialog1.ShowDialog(); // Show the dialog.
+            if (result == DialogResult.OK) // Test result.
+            {
+                filePath = openFileDialog1.FileName;
+                fileDirectory = filePath.Replace(openFileDialog1.SafeFileName, "");
 
+                try
+                {
+                    string text = File.ReadAllText(filePath);
+                    size = text.Length;
+                }
+                catch (IOException)
+                {
+                }
 
-
+                textBox1.Text = filePath;
+            }
+        }
     }
 }
