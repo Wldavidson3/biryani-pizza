@@ -16,6 +16,7 @@ namespace camaraTrans
     {
         string fileDirectory;
         string filePath;
+        string newFileName;
 
         String[] VarArr = new String[] { "AGEMG", "DNBW", "MDNSTY", "MKTWT", "PAGEMG", "STDNO1", "STDNO2", "STDNO3", "STDNO4", "STNUMB" };
         String[] lowBound = new String[10];
@@ -38,7 +39,7 @@ namespace camaraTrans
                 string line;
                 Boolean isObj = false;
 
-                StreamWriter writer = new StreamWriter(fileDirectory + "New Input.lng");
+                StreamWriter writer = new StreamWriter(newFileName);
 
             BoilerPlate(writer);
             BnsVars(writer);
@@ -204,15 +205,8 @@ namespace camaraTrans
                         String teset = sb1.ToString().Substring(indAss);
                         upBound[i] = teset;
                     }
-
-
-
                 }
-
-
             }
-
-
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -223,6 +217,7 @@ namespace camaraTrans
             {
                 filePath = openFileDialog1.FileName;
                 fileDirectory = filePath.Replace(openFileDialog1.SafeFileName, "");
+                newFileName = fileDirectory + (openFileDialog1.SafeFileName).Replace(".dat", "") + " - Reformatted.lng";
 
                 try
                 {
