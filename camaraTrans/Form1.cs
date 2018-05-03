@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -14,12 +15,14 @@ namespace camaraTrans
 {
     public partial class Form1 : Form
     {
+        int numObj = 0;
         string fileDirectory;
         string filePath;
-
-        String[] VarArr = new String[] { "AGEMG", "DNBW", "MDNSTY", "MKTWT", "PAGEMG", "STDNO1", "STDNO2", "STDNO3", "STDNO4", "STNUMB" };
-        String[] lowBound = new String[10];
-        String[] upBound = new String[10];
+        String[] comArr = new String[] { "AGEMG", "DNBW", "MDNSTY", "PAGEMG", "STNUMB"};
+        String[] comLb = new String[5];
+        ArrayList varName = new ArrayList();
+        ArrayList lowBound = new ArrayList();
+        ArrayList upBound = new ArrayList();
 
         public Form1()
         {
@@ -36,14 +39,14 @@ namespace camaraTrans
             else
             {
                 string line;
-                Boolean isObj = false;
 
                 StreamWriter writer = new StreamWriter(fileDirectory + "New Input.lng");
 
             BoilerPlate(writer);
             BnsVars(writer);
+            fillDataArr(writer);
 
-                StreamReader reader =
+                    StreamReader reader =
                     new StreamReader(filePath);
 
             //regex for numbering each line
@@ -79,12 +82,6 @@ namespace camaraTrans
                     sb.Insert(ABSind, "@");
 
                 }
-                if (sb.ToString().Contains("- obj4"))
-                {
-                    isObj = true;
-                    sb.Append(";");
-
-                }
 
                 if (sb.ToString().Contains("GO"))
                 {
@@ -98,7 +95,8 @@ namespace camaraTrans
                 }
                 if (sb.ToString().Contains("DIVERT t_t4xxx.dat"))
                 {
-                    sb.Replace("DIVERT t_t4xxx.dat", "END");
+                        writer.WriteLine("ENDINIT");
+                    sb.Replace("DIVERT t_t4xxx.dat", "");
 
                 }
 
@@ -116,38 +114,76 @@ namespace camaraTrans
                 {
                     sb.Insert(0, "!");
                 }
-                //Console.WriteLine("SLB " + VarArr[0]);
-                //Console.Read();
-                if (sb.ToString().Contains("END"))
-                {
-                    //remove end
-                }
-                //write a single line
-                writer.WriteLine(sb);
+                   
 
-                if (isObj == true)
-                {
-                    upBound[9] = upBound[8];
-                    writer.WriteLine();
-                    for (int i = 0; i < 10; i++)
+                if(sb.ToString().Contains("! set bounds "))
                     {
-                        String s;
-                        if (VarArr[i].Equals("AGEMG") || VarArr[i].Equals("DNBW") || VarArr[i].Equals("MDNSTY") || VarArr[i].Equals("PAGEMG"))
+                        sb.Replace("! set bounds and guess on ingredients", "INIT:");
+                    }
+                    if (sb.ToString().Contains("END"))
+                    {
+                        sb.Replace("END", "");
+                    }
+                    if (sb.ToString().Contains("- obj" + (numObj)))
+                    {
+                        sb.Append(";");
+                    }
+                    if(sb.ToString().Contains("GUESS "))
+                    {
+                        sb.Remove(0, 6);
+                        if(sb.ToString().Contains("  ")){
+                            sb.Replace("  ", " ");
+                        }
+                        sb.Replace(" "," = ");
+                        sb.Append(" ;");
+                    }
+
+
+                    if (!(sb.ToString().Contains("SLB ")|| sb.ToString().Contains("SUB ") || sb.ToString().Contains("SETP ")))
+                    {
+                        writer.WriteLine(sb);
+                    }
+
+
+
+
+                    
+                    if (sb.ToString().Contains("- obj" + (numObj)))
+                    {
+                      
+                        writer.WriteLine();
+                        for (int i = 0; i < comArr.Length; i++)
                         {
+                            String s;
                             s = "1.E10);";
+                            if (comArr[i].Equals("STNUMB"))
+                            {
+                                writer.WriteLine("@BND( " + comLb[i] + ", " + comArr[i] + ", " + upBound[0] + ");");
+                            }
+                            else
+                            {
+                                writer.WriteLine("@BND( " + comLb[i] + ", " + comArr[i] + ", " + s);
+                            }
+
+
                         }
 
-                        else
+                        for (int i = 0; i < varName.Count; i++)
                         {
+                            String s;
                             s = upBound[i] + ");";
+
+                            writer.WriteLine("@BND( " + lowBound[i] + ", " + varName[i] + ", " + s);
+
                         }
-                        writer.WriteLine("@BND( " + lowBound[i] + ", " + VarArr[i] + ", " + s);
 
                     }
-                    isObj = false;
-                }
+
+                    
+              
 
                 }
+                writer.Write("END");
                 writer.Close();
                 MessageBox.Show("The new input file has been created in the directory of the selected file.", "File Has Been Created",
                     MessageBoxButtons.OK, MessageBoxIcon.None);
@@ -177,43 +213,98 @@ namespace camaraTrans
 
         private void BnsVars(StreamWriter writer)
         {
-
+            String sVar = "";
             String line1;
             StreamReader reader1 =
-            new StreamReader("C:\\Users\\Amahn\\Desktop\\Files for the phone conference\\Input Files\\t_t3dat for old optimizer.dat");
-
+            new StreamReader(filePath);
+            StringBuilder sb1;
 
             while ((line1 = reader1.ReadLine()) != null)
             {
-                StringBuilder sb1 = new StringBuilder(line1);
+                sb1 = new StringBuilder(line1);
 
-
-                for (int i = 0; i < 10; i++)
+                //Variable array fill
+                if (sb1.ToString().Contains("objective:"))
                 {
-                    //lowerbound array only
-                    if (sb1.ToString().Contains("SLB " + VarArr[i]))
+                    numObj++;
+                }
+                if (sb1.ToString().Contains("SUB "))
+                {
+                    // Add to the Variable array
+                    int i = 4;
+                    char c = sb1[i];
+                    do
                     {
-                        int indAss = (6 + VarArr[i].Length);
-                        String teset = sb1.ToString().Substring(indAss);
-                        lowBound[i] = teset;
-                    }
-                    //upperb array fill
-                    if (sb1.ToString().Contains("SUB " + VarArr[i]))
-                    {
-                        int indAss = (6 + VarArr[i].Length);
-                        String teset = sb1.ToString().Substring(indAss);
-                        upBound[i] = teset;
-                    }
+                        
+                        if (!c.Equals(" "))
+                        {
+                            sVar += c;
 
+                        }
+                    
+                   
+                        i++;
+                        c = sb1[i];
+                    } while (!c.Equals(' '));
 
-
+                    varName.Add(sVar);
+                    sVar = "";
                 }
 
 
             }
-
+        
 
         }
+
+        private void fillDataArr(StreamWriter writer)
+        {
+            String line2;
+            StreamReader reader2 =
+            new StreamReader(filePath);
+
+            while ((line2 = reader2.ReadLine()) != null)
+            {
+                StringBuilder sb2 = new StringBuilder(line2);
+
+                for (int i = 0; i < comArr.Length; i++)
+                {
+                    if (sb2.ToString().Contains("SLB " + comArr[i]))
+                    {
+                        int indAss = (6 + comArr[i].ToString().Length);
+                        String teset = sb2.ToString().Substring(indAss);
+                        comLb[i]=teset;
+                    }
+
+
+                }  
+
+                for (int i = 0; i < varName.Count; i++)
+                {
+                   
+                         // lowerbound array only
+                         if (sb2.ToString().Contains("SLB " + varName[i]))
+                         {
+                             int indAss = (6 + varName[i].ToString().Length);
+                             String teset = sb2.ToString().Substring(indAss);
+                             lowBound.Add(teset);
+                         }
+
+                         if (sb2.ToString().Contains("SUB " + varName[i]))
+                         {
+                        int indAss = (6 + varName[i].ToString().Length);
+                        String test = sb2.ToString().Substring(indAss);
+                        upBound.Add(test);
+                         }
+                   
+                    
+                }
+               
+            }
+          
+        }
+
+
 
         private void button2_Click(object sender, EventArgs e)
         {
