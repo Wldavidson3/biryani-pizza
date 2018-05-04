@@ -18,6 +18,7 @@ namespace camaraTrans
         int numObj = 0;
         string fileDirectory;
         string filePath;
+        string newFileName;
         String[] comArr = new String[] { "AGEMG", "DNBW", "MDNSTY", "PAGEMG", "STNUMB"};
         String[] comLb = new String[5];
         ArrayList varName = new ArrayList();
@@ -40,7 +41,7 @@ namespace camaraTrans
             {
                 string line;
 
-                StreamWriter writer = new StreamWriter(fileDirectory + "New Input.lng");
+                StreamWriter writer = new StreamWriter(newFileName);
 
             BoilerPlate(writer);
             BnsVars(writer);
@@ -314,6 +315,7 @@ namespace camaraTrans
             {
                 filePath = openFileDialog1.FileName;
                 fileDirectory = filePath.Replace(openFileDialog1.SafeFileName, "");
+                newFileName = fileDirectory + (openFileDialog1.SafeFileName).Replace(".dat", "") + " - Reformatted.lng";
 
                 try
                 {
