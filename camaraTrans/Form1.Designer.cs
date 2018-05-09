@@ -77,10 +77,6 @@
             this.textBox1.Size = new System.Drawing.Size(471, 20);
             this.textBox1.TabIndex = 3;
             // 
-            // openFileDialog1
-            // 
-            this.openFileDialog1.FileName = "openFileDialog1";
-            // 
             // button3
             // 
             this.button3.Enabled = false;
@@ -117,10 +113,6 @@
             this.button4.TabIndex = 7;
             this.button4.Text = "Format Output";
             this.button4.UseVisualStyleBackColor = true;
-            // 
-            // openFileDialog2
-            // 
-            this.openFileDialog2.FileName = "openFileDialog2";
             // 
             // Form1
             // 
