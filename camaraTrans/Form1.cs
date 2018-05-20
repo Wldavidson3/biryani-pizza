@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -19,8 +20,8 @@ namespace camaraTrans
         string fileDirectory;
         string filePath;
         string newFileName;
-        String[] comArr = new String[] { "AGEMG", "DNBW", "MDNSTY", "PAGEMG", "STNUMB"};
-        String[] comLb = new String[5];
+        //String[] comArr = new String[] { "AGEMG", "DNBW", "MDNSTY", "PAGEMG", "STNUMB"};
+        //String[] comLb = new String[5];
         ArrayList varName = new ArrayList();
         ArrayList lowBound = new ArrayList();
         ArrayList upBound = new ArrayList();
@@ -43,19 +44,19 @@ namespace camaraTrans
 
                 StreamWriter writer = new StreamWriter(newFileName);
 
-            BoilerPlate(writer);
-            BnsVars(writer);
-            fillDataArr(writer);
+                BoilerPlate(writer);
+                BnsVars(writer);
+                fillDataArr(writer);
+                FillDefaultBounds();
 
-                    StreamReader reader =
-                    new StreamReader(filePath);
+                StreamReader reader =
+                new StreamReader(filePath);
 
             //regex for numbering each line
             Regex regex1 = new Regex(@"\d{3}\)\s\s");
             Regex regex2 = new Regex(@"\d{3}\)\s[a-zA-Z]");
             while ((line = reader.ReadLine()) != null)
             {
-
                 //takes in a single line
                 StringBuilder sb = new StringBuilder(line);
 
@@ -89,11 +90,13 @@ namespace camaraTrans
                     sb.Remove(0, 2);
 
                 }
+
                 if (sb.ToString().Contains("QUIT"))
                 {
                     sb.Remove(0, 4);
 
                 }
+
                 if (sb.ToString().Contains("DIVERT t_t4xxx.dat"))
                 {
                         writer.WriteLine("ENDINIT");
@@ -111,20 +114,21 @@ namespace camaraTrans
 
                 }
 
-                if (sb.ToString().Contains("STDNECK "))
-                {
-                    sb.Insert(0, "!");
-                }
-                   
+                //if (sb.ToString().Contains("STDNECK "))
+                //{
+                //    sb.Insert(0, "!");
+                //}
 
                 if(sb.ToString().Contains("! set bounds "))
-                    {
+                {
                         sb.Replace("! set bounds and guess on ingredients", "INIT:");
-                    }
+                }
+
                     if (sb.ToString().Contains("END"))
                     {
                         sb.Replace("END", "");
                     }
+
                     if (sb.ToString().Contains("- obj" + (numObj)))
                     {
                         sb.Append(";");
@@ -139,35 +143,31 @@ namespace camaraTrans
                         sb.Append(" ;");
                     }
 
-
                     if (!(sb.ToString().Contains("SLB ")|| sb.ToString().Contains("SUB ") || sb.ToString().Contains("SETP ")))
                     {
                         writer.WriteLine(sb);
                     }
-
-
-
-
-                    
+           
                     if (sb.ToString().Contains("- obj" + (numObj)))
                     {
                       
                         writer.WriteLine();
-                        for (int i = 0; i < comArr.Length; i++)
-                        {
-                            String s;
-                            s = "1.E10);";
-                            if (comArr[i].Equals("STNUMB"))
-                            {
-                                writer.WriteLine("@BND( " + comLb[i] + ", " + comArr[i] + ", " + upBound[0] + ");");
-                            }
-                            else
-                            {
-                                writer.WriteLine("@BND( " + comLb[i] + ", " + comArr[i] + ", " + s);
-                            }
+                        writer.WriteLine("!Bounds;");
+                        //for (int i = 0; i < comArr.Length; i++)
+                        //{
+                        //    String s;
+                        //    s = "1.E10);";
+                        //    if (comArr[i].Equals("STNUMB"))
+                        //    {
+                        //        writer.WriteLine("@BND( " + comLb[i] + ", " + comArr[i] + ", " + upBound[0] + ");");
+                        //    }
+                        //    else
+                        //    {
+                        //        writer.WriteLine("@BND( " + comLb[i] + ", " + comArr[i] + ", " + s);
+                        //    }
 
 
-                        }
+                        //}
 
                         for (int i = 0; i < varName.Count; i++)
                         {
@@ -177,19 +177,20 @@ namespace camaraTrans
                             writer.WriteLine("@BND( " + lowBound[i] + ", " + varName[i] + ", " + s);
 
                         }
-
                     }
-
-                    
-              
-
                 }
                 writer.Write("END");
                 writer.Close();
-                MessageBox.Show("The new input file has been created in the directory of the selected file.", "File Has Been Created",
-                    MessageBoxButtons.OK, MessageBoxIcon.None);
+
+                DialogResult dialogResult = MessageBox.Show(
+                    "The new input file has been created in the folder of the selected file. Would you like to open the folder now?", 
+                    "File Has Been Created",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.None);
+                if(dialogResult == DialogResult.Yes)
+                {
+                    Process.Start("explorer.exe", "/select, " + newFileName);
+                }
             }
-            
         }
 
         private void BoilerPlate(StreamWriter writer)
@@ -209,9 +210,6 @@ namespace camaraTrans
             writer.Write("ENDCALC");
         }
 
-
-
-
         private void BnsVars(StreamWriter writer)
         {
             String sVar = "";
@@ -229,33 +227,57 @@ namespace camaraTrans
                 {
                     numObj++;
                 }
-                if (sb1.ToString().Contains("SUB "))
+                if (sb1.ToString().Contains("SLB ") || sb1.ToString().Contains("SUB "))
                 {
                     // Add to the Variable array
                     int i = 4;
                     char c = sb1[i];
+
                     do
-                    {
-                        
+                    {       
                         if (!c.Equals(" "))
                         {
                             sVar += c;
-
                         }
-                    
-                   
+
                         i++;
                         c = sb1[i];
                     } while (!c.Equals(' '));
 
-                    varName.Add(sVar);
+                    if (varName.Count > 0)
+                    {
+                        for (i = 0; i < varName.Count; i++)
+                        {
+                            if (!varName.Contains(sVar))
+                            {
+                                varName.Add(sVar);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        varName.Add(sVar);
+                    }
+                    
                     sVar = "";
                 }
-
-
             }
-        
+        }
 
+        private void FillDefaultBounds()
+        {
+            for (int i = 0; i < varName.Count; i++)
+            {
+                if (lowBound[i].ToString() == "")
+                {
+                    lowBound[i] = "-1.E10";
+                }
+
+                if (upBound[i].ToString() == "")
+                {
+                    upBound[i] = "1.E10";
+                }
+            }
         }
 
         private void fillDataArr(StreamWriter writer)
@@ -264,45 +286,43 @@ namespace camaraTrans
             StreamReader reader2 =
             new StreamReader(filePath);
 
+            for (int i = 0; i < varName.Count; i++)
+            {
+                lowBound.Add("");
+                upBound.Add("");
+            }
+
             while ((line2 = reader2.ReadLine()) != null)
             {
                 StringBuilder sb2 = new StringBuilder(line2);
 
-                for (int i = 0; i < comArr.Length; i++)
-                {
-                    if (sb2.ToString().Contains("SLB " + comArr[i]))
-                    {
-                        int indAss = (6 + comArr[i].ToString().Length);
-                        String teset = sb2.ToString().Substring(indAss);
-                        comLb[i]=teset;
-                    }
-
-
-                }  
+                //for (int i = 0; i < comArr.Length; i++)
+                //{
+                //    if (sb2.ToString().Contains("SLB " + comArr[i]))
+                //    {
+                //        int indAss = (6 + comArr[i].ToString().Length);
+                //        String teset = sb2.ToString().Substring(indAss);
+                //        comLb[i]=teset;
+                //    }
+                //}  
 
                 for (int i = 0; i < varName.Count; i++)
                 {
-                   
-                         // lowerbound array only
-                         if (sb2.ToString().Contains("SLB " + varName[i]))
-                         {
-                             int indAss = (6 + varName[i].ToString().Length);
-                             String teset = sb2.ToString().Substring(indAss);
-                             lowBound.Add(teset);
-                         }
+                    //lowerbound array only
 
-                         if (sb2.ToString().Contains("SUB " + varName[i]))
-                         {
-                        int indAss = (6 + varName[i].ToString().Length);
-                        String test = sb2.ToString().Substring(indAss);
-                        upBound.Add(test);
-                         }
-                   
-                    
+                    if (sb2.ToString().Contains("SLB " + varName[i]))
+                    {
+                        String teset = sb2.ToString().Replace("SLB " + varName[i] + " ", "").Trim();
+                        lowBound[i] = teset;
+                    }
+
+                    if (sb2.ToString().Contains("SUB " + varName[i]))
+                    {
+                        String test = sb2.ToString().Replace("SUB " + varName[i] + " ", "").Trim();
+                        upBound[i] = test;
+                    }
                 }
-               
             }
-          
         }
 
 
