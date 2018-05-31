@@ -310,13 +310,13 @@ namespace camaraTrans
                 {
                     //lowerbound array only
 
-                    if (sb2.ToString().Contains("SLB " + varName[i]))
+                    if (sb2.ToString().Contains("SLB " + varName[i] + " "))
                     {
                         String teset = sb2.ToString().Replace("SLB " + varName[i] + " ", "").Trim();
                         lowBound[i] = teset;
                     }
 
-                    if (sb2.ToString().Contains("SUB " + varName[i]))
+                    if (sb2.ToString().Contains("SUB " + varName[i] + " "))
                     {
                         String test = sb2.ToString().Replace("SUB " + varName[i] + " ", "").Trim();
                         upBound[i] = test;
