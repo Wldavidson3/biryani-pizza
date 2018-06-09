@@ -20,11 +20,17 @@ namespace camaraTrans
         string fileDirectory;
         string filePath;
         string newFileName;
+        string fileDirectory2;
+        string filePath2;
+        string newFileName2;
         //String[] comArr = new String[] { "AGEMG", "DNBW", "MDNSTY", "PAGEMG", "STNUMB"};
         //String[] comLb = new String[5];
         ArrayList varName = new ArrayList();
         ArrayList lowBound = new ArrayList();
         ArrayList upBound = new ArrayList();
+
+        StringBuilder tempStr = new StringBuilder("test");
+        StringBuilder output = new StringBuilder();
 
         public Form1()
         {
@@ -52,77 +58,77 @@ namespace camaraTrans
                 StreamReader reader =
                 new StreamReader(filePath);
 
-            //regex for numbering each line
-            Regex regex1 = new Regex(@"\d{3}\)\s\s");
-            Regex regex2 = new Regex(@"\d{3}\)\s[a-zA-Z]");
-            while ((line = reader.ReadLine()) != null)
-            {
-                //takes in a single line
-                StringBuilder sb = new StringBuilder(line);
-
-                if (sb.ToString().Contains("MODEL"))
+                //regex for numbering each line
+                Regex regex1 = new Regex(@"\d{3}\)\s\s");
+                Regex regex2 = new Regex(@"\d{3}\)\s[a-zA-Z]");
+                while ((line = reader.ReadLine()) != null)
                 {
-                    sb.Remove(0, 6);
+                    //takes in a single line
+                    StringBuilder sb = new StringBuilder(line);
 
-                }
-                if (sb.ToString().Contains("Intake:") || sb.ToString().Contains("constraints") || sb.ToString().Contains("objective:") || sb.ToString().Contains("equations") || sb.ToString().Contains("objective"))
-                {
-                    sb.Append(";");
+                    if (sb.ToString().Contains("MODEL"))
+                    {
+                        sb.Remove(0, 6);
 
-                }
+                    }
+                    if (sb.ToString().Contains("Intake:") || sb.ToString().Contains("constraints") || sb.ToString().Contains("objective:") || sb.ToString().Contains("equations") || sb.ToString().Contains("objective"))
+                    {
+                        sb.Append(";");
 
-                if (sb.ToString().Contains("ABS"))
-                {
-                    int ABSind = (sb.ToString().IndexOf("A"));
-                    sb.Insert(ABSind, "@");
+                    }
 
-                }
+                    if (sb.ToString().Contains("ABS"))
+                    {
+                        int ABSind = (sb.ToString().IndexOf("A"));
+                        sb.Insert(ABSind, "@");
 
-                if (sb.ToString().Contains("LOG"))
-                {
-                    int ABSind = (sb.ToString().IndexOf("L"));
-                    sb.Insert(ABSind, "@");
+                    }
 
-                }
+                    if (sb.ToString().Contains("LOG"))
+                    {
+                        int ABSind = (sb.ToString().IndexOf("L"));
+                        sb.Insert(ABSind, "@");
 
-                if (sb.ToString().Contains("GO"))
-                {
-                    sb.Remove(0, 2);
+                    }
 
-                }
+                    if (sb.ToString().Contains("GO"))
+                    {
+                        sb.Remove(0, 2);
 
-                if (sb.ToString().Contains("QUIT"))
-                {
-                    sb.Remove(0, 4);
+                    }
 
-                }
+                    if (sb.ToString().Contains("QUIT"))
+                    {
+                        sb.Remove(0, 4);
 
-                if (sb.ToString().Contains("DIVERT t_t4xxx.dat"))
-                {
+                    }
+
+                    if (sb.ToString().Contains("DIVERT t_t4xxx.dat"))
+                    {
                         writer.WriteLine("ENDINIT");
-                    sb.Replace("DIVERT t_t4xxx.dat", "");
+                        sb.Replace("DIVERT t_t4xxx.dat", "");
 
-                }
+                    }
 
-                Match match1 = regex1.Match(sb.ToString());
-                Match match2 = regex2.Match(sb.ToString());
-                if (match1.Success || match2.Success)
-                {
-                    int NumInd = (sb.ToString().IndexOf(")"));
-                    sb.Replace(")", "]", NumInd, 1);
-                    sb.Insert(0, "[R_");
+                    Match match1 = regex1.Match(sb.ToString());
+                    Match match2 = regex2.Match(sb.ToString());
+                    if (match1.Success || match2.Success)
+                    {
+                        int NumInd = (sb.ToString().IndexOf(")"));
+                        sb.Replace(")", "]", NumInd, 1);
+                        sb.Insert(0, "[R_");
 
-                }
+                    }
 
-                //if (sb.ToString().Contains("STDNECK "))
-                //{
-                //    sb.Insert(0, "!");
-                //}
+                    //if (sb.ToString().Contains("STDNECK "))
+                    //{
+                    //    sb.Insert(0, "!");
+                    //}
 
-                if(sb.ToString().Contains("! set bounds "))
-                {
+                    if (sb.ToString().Contains("! set bounds "))
+                    {
                         sb.Replace("! set bounds and guess on ingredients", "INIT:");
-                }
+                    }
 
                     if (sb.ToString().Contains("END"))
                     {
@@ -133,24 +139,25 @@ namespace camaraTrans
                     {
                         sb.Append(";");
                     }
-                    if(sb.ToString().Contains("GUESS "))
+                    if (sb.ToString().Contains("GUESS "))
                     {
                         sb.Remove(0, 6);
-                        if(sb.ToString().Contains("  ")){
+                        if (sb.ToString().Contains("  "))
+                        {
                             sb.Replace("  ", " ");
                         }
-                        sb.Replace(" "," = ");
+                        sb.Replace(" ", " = ");
                         sb.Append(" ;");
                     }
 
-                    if (!(sb.ToString().Contains("SLB ")|| sb.ToString().Contains("SUB ") || sb.ToString().Contains("SETP ")))
+                    if (!(sb.ToString().Contains("SLB ") || sb.ToString().Contains("SUB ") || sb.ToString().Contains("SETP ")))
                     {
                         writer.WriteLine(sb);
                     }
-           
+
                     if (sb.ToString().Contains("- obj" + (numObj)))
                     {
-                      
+
                         writer.WriteLine();
                         writer.WriteLine("!Bounds;");
                         //for (int i = 0; i < comArr.Length; i++)
@@ -183,10 +190,10 @@ namespace camaraTrans
                 writer.Close();
 
                 DialogResult dialogResult = MessageBox.Show(
-                    "The new input file has been created in the folder of the selected file. Would you like to open the folder now?", 
+                    "The new input file has been created in the folder of the selected file. Would you like to open the folder now?",
                     "File Has Been Created",
                     MessageBoxButtons.YesNo, MessageBoxIcon.None);
-                if(dialogResult == DialogResult.Yes)
+                if (dialogResult == DialogResult.Yes)
                 {
                     Process.Start("explorer.exe", "/select, " + newFileName);
                 }
@@ -234,7 +241,7 @@ namespace camaraTrans
                     char c = sb1[i];
 
                     do
-                    {       
+                    {
                         if (!c.Equals(" "))
                         {
                             sVar += c;
@@ -258,7 +265,7 @@ namespace camaraTrans
                     {
                         varName.Add(sVar);
                     }
-                    
+
                     sVar = "";
                 }
             }
@@ -296,15 +303,7 @@ namespace camaraTrans
             {
                 StringBuilder sb2 = new StringBuilder(line2);
 
-                //for (int i = 0; i < comArr.Length; i++)
-                //{
-                //    if (sb2.ToString().Contains("SLB " + comArr[i]))
-                //    {
-                //        int indAss = (6 + comArr[i].ToString().Length);
-                //        String teset = sb2.ToString().Substring(indAss);
-                //        comLb[i]=teset;
-                //    }
-                //}  
+               
 
                 for (int i = 0; i < varName.Count; i++)
                 {
@@ -349,5 +348,173 @@ namespace camaraTrans
                 textBox1.Text = filePath;
             }
         }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            int size = -1;
+            DialogResult result = openFileDialog1.ShowDialog(); // Show the dialog.
+            if (result == DialogResult.OK) // Test result.
+            {
+                filePath2 = openFileDialog1.FileName;
+                fileDirectory2 = filePath2.Replace(openFileDialog1.SafeFileName, "");
+                newFileName2 = fileDirectory2 + (openFileDialog1.SafeFileName).Replace(".dat", "") + " - Reformatted.lng";
+
+                try
+                {
+                    string text = File.ReadAllText(filePath2);
+                    size = text.Length;
+                }
+                catch (IOException)
+                {
+                }
+
+                textBox2.Text = filePath2;
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (filePath2 == null)
+            {
+                MessageBox.Show("Please select the old output file.", "File Not Selected",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                string line1;
+
+                StreamWriter writerOut = new StreamWriter(newFileName2);
+                StreamReader readerOut = new StreamReader(filePath2);
+
+               
+                StringBuilder sb1 = new StringBuilder();
+
+                Regex r1 = new Regex(@"[a-zA-Z]_0{2}");
+                Regex r2 = new Regex(@"[a-zA-Z]_0");
+                Regex r3 = new Regex(@"[a-zA-Z]_\d{3}");
+
+               
+                Boolean headerDone = false;
+                Boolean varIsMatch= false;
+                Boolean rowIsMatch = false;
+                Boolean tempB = false;
+
+                while ((line1 = readerOut.ReadLine()) != null)
+                {
+                    sb1.Clear();
+                    sb1.Append(line1);
+                    if (tempB)
+                    {
+                        rowIsMatch = true;
+                    }
+
+                    if ((sb1.ToString().Contains("Variable           Value")))
+                    {
+                        sb1.Append("      REDUCED COST");
+                        headerDone = true;
+                        writerOut.WriteLine(" SOLUTION STATUS:  OPTIMAL TO TOLERANCES.  DUAL CONDITIONS:  UNSATISFIED.   OBJECTIVE FUNCTION VALUE");
+                    }
+
+
+                    if (r1.IsMatch(sb1.ToString()))
+                    {
+
+                        int ind = sb1.ToString().IndexOf("R");
+                        int end = ind + 3;
+                        sb1.Replace(sb1.ToString().Substring(ind, 2), "");
+                        sb1.Insert(end, ")");
+
+                        int n = sb1.ToString().IndexOf("0");
+                        sb1.Remove(n, 2);
+                    }
+
+                    if (r2.IsMatch(sb1.ToString()))
+                    {
+
+                        int ind = sb1.ToString().IndexOf("R");
+                        int end = ind + 3;
+                        sb1.Replace(sb1.ToString().Substring(ind, 2), "");
+                        sb1.Insert(end, ")");
+
+                        int n = sb1.ToString().IndexOf("0");
+                        sb1.Remove(n, 1);
+                    }
+
+                    if (r3.IsMatch(sb1.ToString()))
+                    {
+
+                        int ind = sb1.ToString().IndexOf("R");
+                        int end = ind + 3;
+                        sb1.Replace(sb1.ToString().Substring(ind, 2), "");
+                        sb1.Insert(end, ")");
+                    }
+                    
+                    if (sb1.ToString().Contains("Row    Slack or Surplus"))
+                    {
+                        sb1.Append("      PRICE");
+                        varIsMatch = false;
+                        tempB = true;
+                    }
+
+
+
+
+
+
+
+
+                    if (headerDone)
+                    {
+                        if (varIsMatch == true || rowIsMatch == true)
+                        {
+                            
+                            String checkBlank = sb1.ToString();
+                          if(checkBlank.Trim()=="")
+                            {
+                                writerOut.WriteLine();
+                            }
+                            else
+                            {
+                                writerOut.Write(sb1);
+                                //  sb1.Insert(36, "0");
+                                writerOut.WriteLine("             0");
+                            }
+                            
+
+                        }
+
+                        else
+                        {
+                            writerOut.WriteLine(sb1);
+                        }
+                    }
+
+                    if ((sb1.ToString().Contains("Variable           Value")))
+                    {
+                        varIsMatch = true;
+                    }
+
+                }
+
+
+            }
+
+
+
+            DialogResult dialogResult = MessageBox.Show(
+              "The new output file has been created in the folder of the selected file. Would you like to open the folder now?",
+              "File Has Been Created",
+              MessageBoxButtons.YesNo, MessageBoxIcon.None);
+            if (dialogResult == DialogResult.Yes)
+            {
+                Process.Start("explorer.exe", "/select, " + newFileName);
+            }
+        }
+
+      
     }
+
+
+  
 }
+
