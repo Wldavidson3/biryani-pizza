@@ -303,7 +303,7 @@ namespace camaraTrans
             {
                 StringBuilder sb2 = new StringBuilder(line2);
 
-               
+
 
                 for (int i = 0; i < varName.Count; i++)
                 {
@@ -382,124 +382,142 @@ namespace camaraTrans
             else
             {
                 string line1;
-
                 StreamWriter writerOut = new StreamWriter(newFileName2);
                 StreamReader readerOut = new StreamReader(filePath2);
 
-               
                 StringBuilder sb1 = new StringBuilder();
 
                 Regex r1 = new Regex(@"[a-zA-Z]_0{2}");
                 Regex r2 = new Regex(@"[a-zA-Z]_0");
                 Regex r3 = new Regex(@"[a-zA-Z]_\d{3}");
 
-               
                 Boolean headerDone = false;
-                Boolean varIsMatch= false;
+                Boolean varIsMatch = false;
                 Boolean rowIsMatch = false;
                 Boolean tempB = false;
-
+                Boolean fileDone = false;
                 while ((line1 = readerOut.ReadLine()) != null)
                 {
-                    sb1.Clear();
-                    sb1.Append(line1);
-                    if (tempB)
-                    {
-                        rowIsMatch = true;
-                    }
 
-                    if ((sb1.ToString().Contains("Variable           Value")))
-                    {
-                        sb1.Append("      REDUCED COST");
-                        headerDone = true;
-                        writerOut.WriteLine(" SOLUTION STATUS:  OPTIMAL TO TOLERANCES.  DUAL CONDITIONS:  UNSATISFIED.   OBJECTIVE FUNCTION VALUE");
-                    }
-
-
-                    if (r1.IsMatch(sb1.ToString()))
+                    if (writerOut.BaseStream != null)
                     {
 
-                        int ind = sb1.ToString().IndexOf("R");
-                        int end = ind + 3;
-                        sb1.Replace(sb1.ToString().Substring(ind, 2), "");
-                        sb1.Insert(end, ")");
 
-                        int n = sb1.ToString().IndexOf("0");
-                        sb1.Remove(n, 2);
-                    }
+                        sb1.Clear();
+                        sb1.Append(line1);
 
-                    if (r2.IsMatch(sb1.ToString()))
-                    {
-
-                        int ind = sb1.ToString().IndexOf("R");
-                        int end = ind + 3;
-                        sb1.Replace(sb1.ToString().Substring(ind, 2), "");
-                        sb1.Insert(end, ")");
-
-                        int n = sb1.ToString().IndexOf("0");
-                        sb1.Remove(n, 1);
-                    }
-
-                    if (r3.IsMatch(sb1.ToString()))
-                    {
-
-                        int ind = sb1.ToString().IndexOf("R");
-                        int end = ind + 3;
-                        sb1.Replace(sb1.ToString().Substring(ind, 2), "");
-                        sb1.Insert(end, ")");
-                    }
-                    
-                    if (sb1.ToString().Contains("Row    Slack or Surplus"))
-                    {
-                        sb1.Append("      PRICE");
-                        varIsMatch = false;
-                        tempB = true;
-                    }
-
-
-
-
-
-
-
-
-                    if (headerDone)
-                    {
-                        if (varIsMatch == true || rowIsMatch == true)
+                        //if (sb1.ToString().Contains("362"))
+                        //{
+                        //    Console.WriteLine();
+                        //}
+                        if (tempB)
                         {
-                            
-                            String checkBlank = sb1.ToString();
-                          if(checkBlank.Trim()=="")
+                            rowIsMatch = true;
+                        }
+
+
+                        if ((sb1.ToString().Contains("Variable           Value")))
+                        {
+                            sb1.Append("      REDUCED COST");
+                            headerDone = true;
+                            writerOut.WriteLine(" SOLUTION STATUS:  OPTIMAL TO TOLERANCES.  DUAL CONDITIONS:  UNSATISFIED.");
+                            writerOut.WriteLine();
+                            writerOut.WriteLine("OBJECTIVE FUNCTION VALUE");
+                            writerOut.WriteLine();
+
+                            writerOut.WriteLine(findLastLine());
+                            writerOut.WriteLine();
+                        }
+
+
+                        if (r1.IsMatch(sb1.ToString()))
+                        {
+
+                            int ind = sb1.ToString().IndexOf("R");
+                            int end = ind + 3;
+                            sb1.Replace(sb1.ToString().Substring(ind, 2), "");
+                            sb1.Insert(end, ")");
+
+                            int n = sb1.ToString().IndexOf("0");
+                            sb1.Remove(n, 2);
+                        }
+
+                        if (r2.IsMatch(sb1.ToString()))
+                        {
+
+                            int ind = sb1.ToString().IndexOf("R");
+                            int end = ind + 3;
+                            sb1.Replace(sb1.ToString().Substring(ind, 2), "");
+                            sb1.Insert(end, ")");
+
+                            int n = sb1.ToString().IndexOf("0");
+                            sb1.Remove(n, 1);
+                        }
+
+                        if (r3.IsMatch(sb1.ToString()))
+                        {
+
+                            int ind = sb1.ToString().IndexOf("R");
+                            int end = ind + 3;
+                            sb1.Replace(sb1.ToString().Substring(ind, 2), "");
+                            sb1.Insert(end, ")");
+                        }
+
+                        if (sb1.ToString().Contains("Row    Slack or Surplus"))
+                        {
+                            sb1.Append("      PRICE");
+                            varIsMatch = false;
+                            tempB = true;
+                        }
+                        if (headerDone)
+                        {
+                            if (varIsMatch == true || rowIsMatch == true)
                             {
-                                writerOut.WriteLine();
+
+                                String checkBlank = sb1.ToString();
+                                if (checkBlank.Trim() == "")
+                                {
+                                    writerOut.WriteLine();
+                                }
+
+                                {
+                                    writerOut.Write(sb1);
+                                    if (fileDone == false)
+                                    {
+                                        writerOut.WriteLine("             0");
+                                    }
+                                    if (sb1.ToString() == findLastLine())
+                                    {
+                                        fileDone = true;
+                                        writerOut.Close();
+                                    }
+
+                                }
                             }
                             else
                             {
-                                writerOut.Write(sb1);
-                                //  sb1.Insert(36, "0");
-                                writerOut.WriteLine("             0");
+                                Console.WriteLine(sb1);
+                                Console.WriteLine(findLastLine());
+                                Console.Read();
+
+                                if (writerOut.BaseStream != null)
+                                {
+                                    writerOut.WriteLine(sb1);
+                                }
+
                             }
-                            
-
                         }
 
-                        else
+                        if ((sb1.ToString().Contains("Variable           Value")))
                         {
-                            writerOut.WriteLine(sb1);
+                            varIsMatch = true;
                         }
-                    }
 
-                    if ((sb1.ToString().Contains("Variable           Value")))
-                    {
-                        varIsMatch = true;
-                    }
 
+                    }
                 }
-
-
+                
             }
-
-
 
             DialogResult dialogResult = MessageBox.Show(
               "The new output file has been created in the folder of the selected file. Would you like to open the folder now?",
@@ -511,10 +529,42 @@ namespace camaraTrans
             }
         }
 
-      
+        private String findLastLine()
+        {
+            String last = "";
+            String line = "";
+            StreamReader r = new StreamReader(filePath2);
+
+            while ((line = r.ReadLine()) != null)
+            {
+                if (line.Contains("R_"))
+                {
+                 
+                    last = line;
+
+                }
+               
+            }
+
+            int start = last.IndexOf("R");
+            int end = start + 3;
+           last = last.Replace("R_", "");
+           last = last.Insert(end, ")");
+            last.TrimStart('0');
+            return last;
+          
+
+
+
+
+
+        }
+
+
+
     }
 
 
-  
+
 }
 
