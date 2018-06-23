@@ -28,3 +28,13 @@ C:\Users\Amahn\Source\Repos\NewRepo\camaraTrans\obj\Debug\camaraTrans.csproj.Gen
 C:\Users\Amahn\Source\Repos\NewRepo\camaraTrans\obj\Debug\camaraTrans.csproj.CoreCompileInputs.cache
 C:\Users\Amahn\Source\Repos\NewRepo\camaraTrans\obj\Debug\camaraTrans.exe
 C:\Users\Amahn\Source\Repos\NewRepo\camaraTrans\obj\Debug\camaraTrans.pdb
+F:\Users\Walt\Source\Repos\biryani-pizza3\camaraTrans\bin\Debug\camaraTrans.exe.config
+F:\Users\Walt\Source\Repos\biryani-pizza3\camaraTrans\bin\Debug\camaraTrans.exe
+F:\Users\Walt\Source\Repos\biryani-pizza3\camaraTrans\bin\Debug\camaraTrans.pdb
+F:\Users\Walt\Source\Repos\biryani-pizza3\camaraTrans\obj\Debug\camaraTrans.csprojResolveAssemblyReference.cache
+F:\Users\Walt\Source\Repos\biryani-pizza3\camaraTrans\obj\Debug\camaraTrans.Form1.resources
+F:\Users\Walt\Source\Repos\biryani-pizza3\camaraTrans\obj\Debug\camaraTrans.Properties.Resources.resources
+F:\Users\Walt\Source\Repos\biryani-pizza3\camaraTrans\obj\Debug\camaraTrans.csproj.GenerateResource.cache
+F:\Users\Walt\Source\Repos\biryani-pizza3\camaraTrans\obj\Debug\camaraTrans.csproj.CoreCompileInputs.cache
+F:\Users\Walt\Source\Repos\biryani-pizza3\camaraTrans\obj\Debug\camaraTrans.exe
+F:\Users\Walt\Source\Repos\biryani-pizza3\camaraTrans\obj\Debug\camaraTrans.pdb

@@ -382,6 +382,8 @@ namespace camaraTrans
             else
             {
                 string line1;
+                string line;
+
                 StreamWriter writerOut = new StreamWriter(newFileName2);
                 StreamReader readerOut = new StreamReader(filePath2);
 
@@ -396,25 +398,23 @@ namespace camaraTrans
                 Boolean rowIsMatch = false;
                 Boolean tempB = false;
                 Boolean fileDone = false;
+
+                
+
                 while ((line1 = readerOut.ReadLine()) != null)
                 {
-
                     if (writerOut.BaseStream != null)
                     {
-
-
                         sb1.Clear();
                         sb1.Append(line1);
 
-                        //if (sb1.ToString().Contains("362"))
-                        //{
-                        //    Console.WriteLine();
-                        //}
-                        if (tempB)
-                        {
-                            rowIsMatch = true;
-                        }
 
+                        bool containsNum = Regex.IsMatch(sb1.ToString(), @"\d");
+
+                        //if (tempB)
+                        //{
+                        //    rowIsMatch = true;
+                        //}
 
                         if ((sb1.ToString().Contains("Variable           Value")))
                         {
@@ -429,7 +429,6 @@ namespace camaraTrans
                             writerOut.WriteLine();
                         }
 
-
                         if (r1.IsMatch(sb1.ToString()))
                         {
 
@@ -440,6 +439,8 @@ namespace camaraTrans
 
                             int n = sb1.ToString().IndexOf("0");
                             sb1.Remove(n, 2);
+
+
                         }
 
                         if (r2.IsMatch(sb1.ToString()))
@@ -469,54 +470,67 @@ namespace camaraTrans
                             varIsMatch = false;
                             tempB = true;
                         }
-                        if (headerDone)
+
+                        //if (headerDone)
+                        //{
+                        //    if (varIsMatch == true || rowIsMatch == true)
+                        //    {
+                        //        String checkBlank = sb1.ToString();
+                        //        if (checkBlank.Trim() == "")
+                        //        {
+                        //            writerOut.WriteLine();
+                        //        }
+
+                        //        {
+                        //            writerOut.Write(sb1);
+                        //            if (fileDone == false)
+                        //            {
+                        //                writerOut.WriteLine("             0");
+                        //            }
+                        //            if (sb1.ToString() == findLastLine())
+                        //            {
+                        //                fileDone = true;
+                        //                writerOut.Close();
+                        //            }
+
+                        //        }
+                        //    }
+                        //    else
+                        //    {
+                        //        Console.WriteLine(sb1);
+                        //        Console.WriteLine(findLastLine());
+                        //        Console.Read();
+
+                        //        if (writerOut.BaseStream != null)
+                        //        {
+                        //            writerOut.WriteLine(sb1);
+                        //        }
+                        //    }
+                        //}
+
+                        //if ((sb1.ToString().Contains("Variable           Value")))
+                        //{
+                        //    varIsMatch = true;
+                        //}
+
+                        if (headerDone && (sb1.ToString() != findLastLine()))
                         {
-                            if (varIsMatch == true || rowIsMatch == true)
+                            if (containsNum)
                             {
-
-                                String checkBlank = sb1.ToString();
-                                if (checkBlank.Trim() == "")
+                                if (sb1.ToString().Contains("R_"))
                                 {
-                                    writerOut.WriteLine();
+                                    sb1 = sb1.Replace("R_", "");
                                 }
 
-                                {
-                                    writerOut.Write(sb1);
-                                    if (fileDone == false)
-                                    {
-                                        writerOut.WriteLine("             0");
-                                    }
-                                    if (sb1.ToString() == findLastLine())
-                                    {
-                                        fileDone = true;
-                                        writerOut.Close();
-                                    }
-
-                                }
+                                sb1.Append("             0");
                             }
-                            else
-                            {
-                                Console.WriteLine(sb1);
-                                Console.WriteLine(findLastLine());
-                                Console.Read();
 
-                                if (writerOut.BaseStream != null)
-                                {
-                                    writerOut.WriteLine(sb1);
-                                }
-
-                            }
+                            writerOut.WriteLine(sb1);
                         }
-
-                        if ((sb1.ToString().Contains("Variable           Value")))
-                        {
-                            varIsMatch = true;
-                        }
-
-
                     }
                 }
-                
+
+                writerOut.Close();
             }
 
             DialogResult dialogResult = MessageBox.Show(
@@ -539,32 +553,17 @@ namespace camaraTrans
             {
                 if (line.Contains("R_"))
                 {
-                 
                     last = line;
-
                 }
-               
             }
 
             int start = last.IndexOf("R");
             int end = start + 3;
-           last = last.Replace("R_", "");
-           last = last.Insert(end, ")");
+            last = last.Replace("R_", "");
+            last = last.Insert(end, ")");
             last.TrimStart('0');
             return last;
-          
-
-
-
-
-
         }
-
-
-
     }
-
-
-
 }
 
