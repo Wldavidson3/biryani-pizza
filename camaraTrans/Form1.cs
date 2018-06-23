@@ -382,7 +382,6 @@ namespace camaraTrans
             else
             {
                 string line1;
-                string line;
 
                 StreamWriter writerOut = new StreamWriter(newFileName2);
                 StreamReader readerOut = new StreamReader(filePath2);
@@ -394,12 +393,10 @@ namespace camaraTrans
                 Regex r3 = new Regex(@"[a-zA-Z]_\d{3}");
 
                 Boolean headerDone = false;
-                Boolean varIsMatch = false;
-                Boolean rowIsMatch = false;
-                Boolean tempB = false;
-                Boolean fileDone = false;
-
-                
+                //Boolean varIsMatch = false;
+                //Boolean rowIsMatch = false;
+                //Boolean tempB = false;
+                //Boolean fileDone = false;
 
                 while ((line1 = readerOut.ReadLine()) != null)
                 {
@@ -407,7 +404,6 @@ namespace camaraTrans
                     {
                         sb1.Clear();
                         sb1.Append(line1);
-
 
                         bool containsNum = Regex.IsMatch(sb1.ToString(), @"\d");
 
@@ -422,10 +418,10 @@ namespace camaraTrans
                             headerDone = true;
                             writerOut.WriteLine(" SOLUTION STATUS:  OPTIMAL TO TOLERANCES.  DUAL CONDITIONS:  UNSATISFIED.");
                             writerOut.WriteLine();
-                            writerOut.WriteLine("OBJECTIVE FUNCTION VALUE");
+                            writerOut.WriteLine("               OBJECTIVE FUNCTION VALUE");
                             writerOut.WriteLine();
 
-                            writerOut.WriteLine(findLastLine());
+                            writerOut.WriteLine(findLastLine().Remove(0, 40));
                             writerOut.WriteLine();
                         }
 
@@ -433,22 +429,20 @@ namespace camaraTrans
                         {
 
                             int ind = sb1.ToString().IndexOf("R");
-                            int end = ind + 3;
-                            sb1.Replace(sb1.ToString().Substring(ind, 2), "");
+                            int end = ind + 5;
+                            sb1.Replace(sb1.ToString().Substring(ind, 2), "  ");
                             sb1.Insert(end, ")");
 
                             int n = sb1.ToString().IndexOf("0");
                             sb1.Remove(n, 2);
-
-
                         }
 
                         if (r2.IsMatch(sb1.ToString()))
                         {
 
                             int ind = sb1.ToString().IndexOf("R");
-                            int end = ind + 3;
-                            sb1.Replace(sb1.ToString().Substring(ind, 2), "");
+                            int end = ind + 4;
+                            sb1.Replace(sb1.ToString().Substring(ind, 2), " ");
                             sb1.Insert(end, ")");
 
                             int n = sb1.ToString().IndexOf("0");
@@ -467,8 +461,8 @@ namespace camaraTrans
                         if (sb1.ToString().Contains("Row    Slack or Surplus"))
                         {
                             sb1.Append("      PRICE");
-                            varIsMatch = false;
-                            tempB = true;
+                            //varIsMatch = false;
+                            //tempB = true;
                         }
 
                         //if (headerDone)
@@ -513,16 +507,26 @@ namespace camaraTrans
                         //    varIsMatch = true;
                         //}
 
-                        if (headerDone && (sb1.ToString() != findLastLine()))
+                        if (headerDone && !(sb1.ToString().Contains(findLastLine())))
                         {
+                            if(sb1.Length > 40)
+                            {
+                                sb1.Remove(0, 40);
+                            }
+
                             if (containsNum)
                             {
                                 if (sb1.ToString().Contains("R_"))
                                 {
-                                    sb1 = sb1.Replace("R_", "");
+                                    sb1 = sb1.Replace("R_", "  ");
                                 }
 
-                                sb1.Append("             0");
+                                while(sb1.Length < 49)
+                                {
+                                    sb1.Append(' ');
+                                }
+
+                                sb1.Insert(49, "0");
                             }
 
                             writerOut.WriteLine(sb1);
@@ -539,7 +543,7 @@ namespace camaraTrans
               MessageBoxButtons.YesNo, MessageBoxIcon.None);
             if (dialogResult == DialogResult.Yes)
             {
-                Process.Start("explorer.exe", "/select, " + newFileName);
+                Process.Start("explorer.exe", "/select, " + newFileName2);
             }
         }
 
